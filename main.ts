@@ -1,6 +1,5 @@
 import { createBot, startBot } from "https://deno.land/x/discordeno@13.0.0-rc18/mod.ts";
 import { enableCachePlugin, enableCacheSweepers } from "https://deno.land/x/discordeno_cache_plugin@0.0.18/mod.ts";
-import './env.ts';
 
 const baseBot = createBot({
   token: Deno.env.get("DISCORD_TOKEN"),
