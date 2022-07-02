@@ -3,15 +3,17 @@ import { enableCachePlugin, enableCacheSweepers } from "https://deno.land/x/disc
 
 export const Main = async () => {
   const baseBot = createBot({
-    token: Deno.env.get("DISCORD_TOKEN"),
+    token: Deno.env.get("DISCORD_TOKEN") || '',
     intents: ["Guilds", "GuildMessages"],
-    botId: Deno.env.get("BOT_ID"),
+    botId: Deno.env.get("BOT_ID") || '',
     events: {
+      
       ready() {
         console.log("Successfully connected to gateway");
       },
       messageCreate: async (bot, message) => {
-        if(message.isBot) return;
+        const containsBotId = message.mentionedUserIds.find((bigId) => Number(bigId) === Number(bot.id))
+        if(message.isBot || !containsBotId) return;
         await bot.helpers.sendMessage(message.channelId, { content: "Hello World!" });
       },
     },
@@ -22,4 +24,12 @@ export const Main = async () => {
   enableCacheSweepers(bot);
   
   await startBot(bot);
+  
+  let retries = 0;
+  //prevent timeout
+  setInterval(async () => {
+    await startBot(bot);
+    retries++;
+    console.log(`Retries: ${retries}`)
+  }, 5 * 60 * 1000)
 }
